@@ -45,6 +45,20 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
+## Migration
+
+```bash
+# migration:generate
+# example path: ./schema/migrations/[name_file_migration]
+$ npm run migration:generate -- [path_file_migration]
+
+# migration:run
+$ npm run migration:run
+
+# migration:revert
+$ npm run start:revert
+```
+
 ## Test
 
 ```bash
