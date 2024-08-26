@@ -10,13 +10,15 @@ import { ProductsRepository } from '../../repository/products.repository';
 export class ProductsServiceException {
   constructor(private productsRepository: ProductsRepository) {}
 
-  async errorProductDuplicateByName(name: string) {
+  async validateProductDuplicateByName(name: string) {
     const product = await this.productsRepository.findByName(name);
     if (product) {
       throw new BadRequestException(
         `Data product with name ${name} is already exist!`,
       );
     }
+
+    return product;
   }
 
   async validationBeforeManipulate(productCode: string, userCode: string) {

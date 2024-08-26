@@ -5,7 +5,7 @@ import { ProductsController } from './interfaces/rest/products/product.controlle
 import { Product } from './domain/entities/product.entity';
 import { ProductsRepository } from './repository/products.repository';
 import { AuthModule } from '../auth/auth.module';
-import { ProductsServiceException } from './application/helper/service-exception.provider';
+import { ProductsServiceException } from './application/helper/product-service-exception.provider';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Product]), AuthModule],

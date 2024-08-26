@@ -5,7 +5,7 @@ import { ProductsRepository } from '@product/repository/products.repository';
 import { generateProductId } from '@shared/utils/generated-id';
 import { JwtPayload } from '@shared/types/jwt-payload.interface';
 import { AuthRepository } from '@auth/repository/auth.repository';
-import { ProductsServiceException } from '../helper/service-exception.provider';
+import { ProductsServiceException } from '../helper/product-service-exception.provider';
 
 @Injectable()
 export class ProductsService {
@@ -14,8 +14,9 @@ export class ProductsService {
     private authRepository: AuthRepository,
     private productsServiceException: ProductsServiceException,
   ) {}
+
   async createProduct(createProductDto: CreateProductDto, payload: JwtPayload) {
-    await this.productsServiceException.errorProductDuplicateByName(
+    await this.productsServiceException.validateProductDuplicateByName(
       createProductDto.name,
     );
 
@@ -29,14 +30,14 @@ export class ProductsService {
       ...createProductDto,
     });
 
-    delete product.user;
-    delete product.id;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { id, user: owner, ...dataProduct } = product;
 
     return {
       status: 'Success',
       code: 201,
       message: `Product ${createProductDto.name} has been created`,
-      data: { product },
+      data: { dataProduct },
     };
   }
 
