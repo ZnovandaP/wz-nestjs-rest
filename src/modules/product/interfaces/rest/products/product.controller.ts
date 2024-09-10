@@ -70,7 +70,7 @@ export class ProductsController {
     example: 'prd-292jdh31',
   })
   getProduct(@Param('productCode') productCode: string) {
-    return this.productsService.getProdcut(productCode);
+    return this.productsService.getProduct(productCode);
   }
 
   @Patch(':productCode')
@@ -132,5 +132,11 @@ export class ProductsController {
     @Request() req: { user: JwtPayload },
   ) {
     return this.productsService.deleteProduct(productCode, req.user.userCode);
+  }
+
+  @Get('third-party/demo')
+  // @UseInterceptors(CacheInterceptor)
+  getProductsThirdPartyDemo() {
+    return this.productsService.getProductsThirdParty();
   }
 }

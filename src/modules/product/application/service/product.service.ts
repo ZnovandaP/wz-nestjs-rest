@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from '@product/domain/dto/create-product.dto';
 import { UpdateProductDto } from '@product/domain/dto/update-product.dto';
 import { ProductsRepository } from '@product/repository/products.repository';
@@ -6,6 +6,8 @@ import { generateProductId } from '@shared/utils/generated-id';
 import { JwtPayload } from '@shared/types/jwt-payload.interface';
 import { AuthRepository } from '@auth/repository/auth.repository';
 import { ProductsServiceException } from '../helper/product-service-exception.provider';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class ProductsService {
@@ -13,6 +15,7 @@ export class ProductsService {
     private productsRepository: ProductsRepository,
     private authRepository: AuthRepository,
     private productsServiceException: ProductsServiceException,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   async createProduct(createProductDto: CreateProductDto, payload: JwtPayload) {
@@ -43,6 +46,7 @@ export class ProductsService {
 
   async getProducts() {
     const products = await this.productsRepository.findAll();
+
     return {
       status: 'Success',
       message: 'Data products success to retrieved',
@@ -52,7 +56,7 @@ export class ProductsService {
     };
   }
 
-  async getProdcut(productCode: string) {
+  async getProduct(productCode: string) {
     const productAfterValidation =
       await this.productsServiceException.validationBeforeManipulate(
         productCode,
@@ -112,6 +116,34 @@ export class ProductsService {
       status: 'Success',
       code: 200,
       message: `Data product with product code ${productCode} has been deleted`,
+    };
+  }
+
+  /* implementasi cache management dengan case hit resource ke third party app */
+  async getProductsThirdParty() {
+    const productCache = await this.cacheManager.get('products');
+    if (productCache) {
+      console.log('Get data from cache');
+      return this.responseSuccessDataProducts({ products: productCache });
+    }
+
+    const res = await fetch('https://api.escuelajs.co/api/v1/products');
+    const data = await res.json();
+
+    if (data.statusCode === 404) {
+      throw new NotFoundException('Data Products Not Found');
+    }
+
+    await this.cacheManager.set('products', data, 60 * 1000);
+
+    return this.responseSuccessDataProducts({ products: data });
+  }
+
+  responseSuccessDataProducts(data: any) {
+    return {
+      status: 'Success',
+      message: 'Data products success to retrieved',
+      data,
     };
   }
 }
