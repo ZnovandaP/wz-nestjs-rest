@@ -1,0 +1,14 @@
+FROM node:20.11.0-alpine
+
+ENV PORT=3001
+
+WORKDIR /app
+
+COPY . .
+
+RUN npm i
+RUN npm run build
+
+EXPOSE ${PORT}
+
+CMD ["npm", "run", "start:prod"]

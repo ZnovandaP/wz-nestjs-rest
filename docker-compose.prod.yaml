@@ -1,0 +1,51 @@
+services:
+  nestjs-app-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    image: znovandap/wz-nestjs-app-prod:1.0.0
+    ports:
+      - "3001:3001"
+    networks:
+      - wz_nestjs_prod
+    depends_on:
+      - postgres-db-prod
+    command: >
+          sh -c "npm run migration:run &&
+          npm run start:dev"
+    environment:
+      - "PORT=3001"
+      - "PREFIX=api"
+      - "VERSION=v1"
+      - "JWT_SECRET=b67iccqEd2NzED7EhqSTwzPSmI7dOzDKLpvr5MlZRY"
+      - "DB_HOST=postgres-db-prod"
+      - "DB_PORT=5432"
+      - "DB_ROOT_PASSWORD=wz_nestjs_prod"
+      - "DB_USERNAME=wz_nestjs_prod"
+      - "DB_PASSWORD=wz_nestjs_prod"
+      - "DB_NAME=wz_nestjs_prod"
+      - "DB_SYNCHRONIZE=false"
+      - "DB_LOGGING=true"
+      - "DB_DROP_SCHEMA=true"
+    
+  postgres-db-prod:
+    image: postgres:14
+    restart: always
+    ports:
+      - "5430:5432"
+    environment:
+      - "POSTGRES_USER=wz_nestjs_prod"
+      - "POSTGRES_PASSWORD=wz_nestjs_prod"
+      - "POSTGRES_DB=wz_nestjs_prod"
+    volumes:
+      - wz_nestjs_prod_db:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - wz_nestjs_prod
+
+volumes:
+  wz_nestjs_prod_db:
+
+networks:
+  wz_nestjs_prod:
+    driver: bridge

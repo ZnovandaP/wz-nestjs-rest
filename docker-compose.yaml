@@ -1,0 +1,50 @@
+services:
+  nestjs-app-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: znovandap/wz-nestjs-app-dev:1.0.0
+    ports:
+      - "${PORT:-3000}:3000"
+    volumes:
+      - ./src:/app/src
+    networks:
+      - wz_nestjs_dev
+    depends_on:
+      - postgres-db-dev
+    environment:
+      - "PORT=3000"
+      - "PREFIX=api"
+      - "VERSION=v1"
+      - "JWT_SECRET=b67iccqEd2NzED7EhqSTwzPSmI7dOzDKLpvr5MlZRY"
+      - "DB_HOST=postgres-db-dev"
+      - "DB_PORT=5432"
+      - "DB_ROOT_PASSWORD=wz_nestjs_dev"
+      - "DB_USERNAME=wz_nestjs_dev"
+      - "DB_PASSWORD=wz_nestjs_dev"
+      - "DB_NAME=wz_nestjs_dev"
+      - "DB_SYNCHRONIZE=true"
+      - "DB_LOGGING=true"
+      - "DB_DROP_SCHEMA=true"
+    
+  postgres-db-dev:
+    image: postgres:14
+    restart: always
+    ports:
+      - "5431:5432"
+    environment:
+      - "POSTGRES_USER=wz_nestjs_dev"
+      - "POSTGRES_PASSWORD=wz_nestjs_dev"
+      - "POSTGRES_DB=wz_nestjs_dev"
+    volumes:
+      - wz_nestjs_dev_db:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - wz_nestjs_dev
+
+volumes:
+  wz_nestjs_dev_db:
+
+networks:
+  wz_nestjs_dev:
+    driver: bridge
