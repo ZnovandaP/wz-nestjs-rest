@@ -21,9 +21,14 @@
     "typeorm": "npm run build && npx typeorm -d dist/src/shared/database/data-source.js",
     "migration:generate": "npm run typeorm -- migration:generate",
     "migration:run": "npm run typeorm -- migration:run",
-    "migration:revert": "npm run typeorm -- migration:revert"
+    "migration:revert": "npm run typeorm -- migration:revert",
+    "docker-build:dev": "docker compose build --no-cache",
+    "docker-build:prod": "docker compose -f docker-compose.prod.yaml build --no-cache",
+    "docker-run:prod": "docker compose -f docker-compose.prod.yaml --env-file .env.prod up",
+    "docker-run:dev": "docker compose up"
   },
   "dependencies": {
+    "@nestjs/cache-manager": "^2.2.2",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.2.3",
     "@nestjs/core": "^10.0.0",
@@ -34,6 +39,8 @@
     "@nestjs/swagger": "^7.4.0",
     "@nestjs/typeorm": "^10.0.2",
     "bcrypt": "^5.1.1",
+    "cache-manager": "^5.7.6",
+    "cache-manager-redis-yet": "^5.1.4",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "jsonwebtoken": "^9.0.2",
