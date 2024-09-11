@@ -134,7 +134,7 @@ export class ProductsController {
     return this.productsService.deleteProduct(productCode, req.user.userCode);
   }
 
-  @Get('third-party/demo')
+  @Get('caching/demo')
   // @UseInterceptors(CacheInterceptor)
   getProductsThirdPartyDemo() {
     return this.productsService.getProductsThirdParty();
